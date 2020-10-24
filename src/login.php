@@ -9,21 +9,26 @@ if( isset($_SESSION['user_id']) ){
 require 'database.php';
 require 'validation_functions.php';
 
-if(!empty($_POST['email']) && !empty($_POST['password'])):
-	
+$message = '';
+
+if(empty($_POST['email']) || empty($_POST['password'])):
+	$message = "Email or password cannot be empty!";
+
+elseif(!has_valid_email_format($_POST['email']) || !has_length_less_than($_POST['email'], 251)):
+	$message = "Email must be in the correct format and no longer than 250 chars long!";
+
+else:
 	$email = $_POST['email'];
 	$pass = $_POST['password'];
 
-	$query="SELECT id, email, password FROM users WHERE email = '".$email."' and password = '".$pass."'";
-	
+	$query="SELECT id, email, password FROM users WHERE email = :email LIMIT 1";
 	$records = $conn->prepare($query);
+	$stmt->bindParam(':email', $email);
 	$records->execute();
 	$results = $records->fetch(PDO::FETCH_ASSOC);
 	
-	$message = '';
-
-	if ($results != 0){
-
+	if ($results != 0 && password_verify($results['password'], $pass)){
+		// Success!
 		$_SESSION['user_id'] = $results['id'];
 		header("Location: /php-login");
 
