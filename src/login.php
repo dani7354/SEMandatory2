@@ -7,6 +7,7 @@ if( isset($_SESSION['user_id']) ){
 }
 
 require 'database.php';
+require 'validation_functions.php';
 
 if(!empty($_POST['email']) && !empty($_POST['password'])):
 	

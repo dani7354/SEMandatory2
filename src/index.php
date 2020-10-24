@@ -3,6 +3,7 @@
 session_start();
 
 require 'database.php';
+require 'validation_functions.php';
 
 if( isset($_SESSION['user_id']) || @$_GET["debug"]=="1"){
 
