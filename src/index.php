@@ -37,7 +37,7 @@ if( isset($_SESSION['user_id']) || @$_GET["debug"]=="1"){
 
 	<?php if( !empty($user) ): ?>
 
-		<br />Welcome <?= $user['email']; ?> 
+		<br />Welcome <?= htmlspecialchars($user['email']); ?> 
 		<br /><br />You are successfully logged in!
 		<br /><br />
 		<a href="logout.php">Logout?</a>

