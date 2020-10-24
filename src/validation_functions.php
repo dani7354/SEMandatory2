@@ -93,33 +93,4 @@
     return preg_match($email_regex, $value) === 1;
   }
 
-  //reCaptcha
-
-function validate_recaptcha($captcha_response){
-    $url = "https://www.google.com/recaptcha/api/siteverify";
-    $secret_key = "6Ldul40UAAAAAGL5uT6FfmwuI-gby1u0Vd9qWEnM";
-
-    $context = stream_context_create(array(
-        'http' => array(
-            'method' => 'POST',
-            'header' => 'Content-type: application/x-www-form-urlencoded',
-            'content' => http_build_query(array(
-                'secret' => $secret_key,
-                    'response' => $captcha_response
-
-
-                )
-            ),
-          'timeout' => 60
-        )
-    ));
-  $json_response = file_get_contents($url, FALSE, $context);
-  if($json_response === false){
-    error_500();
-  }
-  $response = json_decode($json_response, true);
-  return $response['success'] === true;
-}
-
-
 ?>

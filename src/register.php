@@ -11,18 +11,27 @@ require 'validation_functions.php';
 
 $message = '';
 
-if(!empty($_POST['email']) && !empty($_POST['password'])):
-	
-	// Enter the new user in the database
-	$sql = "INSERT INTO users (email, password) VALUES ('".$_POST['email']."', '".$_POST['password']."')";
-	$stmt = $conn->prepare($sql);
+if($_POST['password'] != $_POST['confirm_password']):
+	$message = 'Passwords do not match!';
 
+elseif(empty($_POST['password']) || !has_length_greater_than($_POST['password'], 7)):
+	$message = 'Password needs to be at least 8 characters!';
+
+elseif(!has_valid_email_format($_POST['email']) || !has_length_less_than($_POST['email'], 251)):
+	$message = 'The entered email is invalid! It should be in the correct format and no longer than 250 chars long...';
+else:
+	// Enter the new user in the database
+	$password_hash = password_hash($_POST['password'], PASSWORD_BCRYPT, ["cost" => 13]);
+	$sql = "INSERT INTO users (email, password) VALUES (:email, :pw)";
+	$stmt = $conn->prepare($sql);
+	$stmt->bindParam(':email', $_POST['email']);
+	$stmt->bindParam(':pw', $password_hash);
+	
 	if( $stmt->execute() ):
 		$message = 'Successfully created new user';
 	else:
 		$message = 'Sorry there must have been an issue creating your account';
 	endif;
-
 endif;
 
 ?>
