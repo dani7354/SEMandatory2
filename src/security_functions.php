@@ -10,9 +10,9 @@ function get_new_token()
     return $token;
 }
 
-function verify_csrf_token($token)
+function csrf_token_is_valid($token)
 {
-    return hash_equals($_SESSION['token'], $token);
+    return hash_equals($_SESSION['csrf_token'], $token);
 }
 
 ?>
