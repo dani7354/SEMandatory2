@@ -1,6 +1,4 @@
-*.sql
 *.yml
 .git
 .DS_Store
-src/database.php
 Dockerfile
