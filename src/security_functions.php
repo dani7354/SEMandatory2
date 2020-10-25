@@ -12,7 +12,7 @@ function get_new_token()
 
 function csrf_token_is_valid($token)
 {
-    return hash_equals($_SESSION['csrf_token'], $token);
+    return !empty($token) && hash_equals($_SESSION['csrf_token'], $token);
 }
 
 ?>

